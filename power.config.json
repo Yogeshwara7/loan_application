@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "appId": "a8516119-9db9-414e-9f7a-d31be18d733a",
+  "appDisplayName": "Innorve Loan Manager",
+  "region": "prod",
+  "environmentId": "e63e19c0-8538-ee1c-baaa-0dcfe1ecd802",
+  "description": " ",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "localAppUrl": "http://localhost:3000",
+  "logoPath": "Default",
+  "connectionReferences": {
+    "b8489a47-2a2e-40e4-acbd-d4c01f38850f": {
+      "id": "/providers/Microsoft.PowerApps/apis/shared_office365",
+      "displayName": "Office 365 Outlook",
+      "dataSources": [
+        "office365"
+      ],
+      "dataSets": {}
+    },
+    "6d4d2ff0-c348-45eb-8298-252dad105e21": {
+      "id": "/providers/Microsoft.PowerApps/apis/shared_commondataservice",
+      "displayName": "Microsoft Dataverse",
+      "dataSources": [
+        "loanapplics"
+      ],
+      "dataSets": {
+        "default.cds": {
+          "dataSources": {
+            "loanapplics": {
+              "tableName": "cr174_loanapplics"
+            }
+          }
+        }
+      }
+    }
+  },
+  "databaseReferences": {}
+}
