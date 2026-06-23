@@ -9,7 +9,28 @@ import type { BadgeProps } from '@fluentui/react-components';
 export type LoanApplication = Cr174_loanapplicsBase;
 
 /** Normalised buckets we care about for KPIs and colour coding. */
-export type StatusKind = 'approved' | 'rejected' | 'review' | 'received' | 'other';
+export type StatusKind =
+  | 'approved'
+  | 'rejected'
+  | 'review'
+  | 'received'
+  | 'resubmitted'
+  | 'other';
+
+/**
+ * Dataverse status choice values → labels. Applicants change status to
+ * ReSubmitted (470160005) via the separate Canvas reapplication portal; the
+ * admin Code App only reads it. Used to resolve raw numeric codes that a flow
+ * might return instead of the formatted label.
+ */
+export const STATUS_CHOICE_LABELS: Record<string, string> = {
+  '470160000': 'Received',
+  '470160001': 'Under Review',
+  '470160002': 'Approved',
+  '470160003': 'Rejected',
+  '470160004': 'Pending',
+  '470160005': 'ReSubmitted',
+};
 
 /**
  * Classify a status into a known bucket using the human-readable status label.
@@ -20,6 +41,8 @@ export type StatusKind = 'approved' | 'rejected' | 'review' | 'received' | 'othe
 export function classifyStatus(label?: string | null): StatusKind {
   const value = (label ?? '').trim().toLowerCase();
   if (!value) return 'other';
+  // Check resubmission first — "resubmitted" also contains "submit".
+  if (value.includes('resubmit') || value.includes('re-submit')) return 'resubmitted';
   if (value.includes('approv')) return 'approved';
   if (value.includes('reject') || value.includes('declin')) return 'rejected';
   if (value.includes('review') || value.includes('pending') || value.includes('progress')) return 'review';
@@ -41,6 +64,8 @@ export function statusBadgeColor(label?: string | null): NonNullable<BadgeProps[
       return 'danger'; // red
     case 'received':
       return 'informative'; // blue
+    case 'resubmitted':
+      return 'severe'; // orange — flagged for manager attention
     default:
       return 'subtle';
   }
@@ -166,6 +191,7 @@ export interface DashboardMetrics {
   rejected: number;
   review: number;
   received: number;
+  resubmitted: number;
   /** Approval rate across decided applications (approved / (approved + rejected)). */
   approvalRate: number;
   /** Sum of all loan amounts. */
@@ -178,6 +204,7 @@ export function computeDashboardMetrics(records: readonly LoanApplication[]): Da
   let rejected = 0;
   let review = 0;
   let received = 0;
+  let resubmitted = 0;
   let totalValue = 0;
   for (const record of records) {
     switch (classifyStatus(record._cr174_status_label)) {
@@ -193,12 +220,24 @@ export function computeDashboardMetrics(records: readonly LoanApplication[]): Da
       case 'received':
         received += 1;
         break;
+      case 'resubmitted':
+        resubmitted += 1;
+        break;
     }
     totalValue += record.cr174_amount ?? 0;
   }
   const decided = approved + rejected;
   const approvalRate = decided === 0 ? 0 : Math.round((approved / decided) * 100);
-  return { total: records.length, approved, rejected, review, received, approvalRate, totalValue };
+  return {
+    total: records.length,
+    approved,
+    rejected,
+    review,
+    received,
+    resubmitted,
+    approvalRate,
+    totalValue,
+  };
 }
 
 export interface TrendResult {
@@ -253,6 +292,7 @@ export function statusDistribution(records: readonly LoanApplication[]): StatusS
   return [
     { kind: 'approved', label: 'Approved', value: metrics.approved },
     { kind: 'review', label: 'Under Review', value: metrics.review },
+    { kind: 'resubmitted', label: 'ReSubmitted', value: metrics.resubmitted },
     { kind: 'rejected', label: 'Rejected', value: metrics.rejected },
     { kind: 'received', label: 'Received', value: metrics.received },
   ];

@@ -8,7 +8,7 @@ import {
 import type { ReactElement, ReactNode } from 'react';
 import { Surface } from './Surface';
 
-export type KpiTone = 'brand' | 'success' | 'danger' | 'warning' | 'info' | 'neutral';
+export type KpiTone = 'brand' | 'success' | 'danger' | 'warning' | 'info' | 'neutral' | 'orange';
 
 const useStyles = makeStyles({
   card: {
@@ -49,6 +49,10 @@ const useStyles = makeStyles({
   chipInfo: {
     backgroundColor: tokens.colorPaletteTealBackground2,
     color: tokens.colorPaletteTealForeground2,
+  },
+  chipOrange: {
+    backgroundColor: tokens.colorPaletteDarkOrangeBackground2,
+    color: tokens.colorPaletteDarkOrangeForeground2,
   },
   chipNeutral: {
     backgroundColor: tokens.colorNeutralBackground4,
@@ -100,6 +104,7 @@ const chipClassByTone: Record<KpiTone, keyof ReturnType<typeof useStyles>> = {
   warning: 'chipWarning',
   info: 'chipInfo',
   neutral: 'chipNeutral',
+  orange: 'chipOrange',
 };
 
 export interface KpiCardProps {

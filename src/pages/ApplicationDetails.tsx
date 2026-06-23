@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
+  Body1,
   Button,
   Caption1,
   MessageBar,
@@ -8,18 +9,20 @@ import {
   Text,
   Title2,
   makeStyles,
+  mergeClasses,
   tokens,
 } from '@fluentui/react-components';
 import {
   ArrowLeftRegular,
   ArrowClockwiseRegular,
+  ArrowSyncRegular,
   CommentRegular,
   HistoryRegular,
   StreamRegular,
 } from '@fluentui/react-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLoanData } from '../context/LoanDataContext';
-import { findApplication, toErrorMessage } from '../models/loan';
+import { classifyStatus, findApplication, toErrorMessage } from '../models/loan';
 import {
   deriveTimelineFromRecord,
   getLoanTimeline,
@@ -27,7 +30,7 @@ import {
   type LoanTimelineResponse,
 } from '../services/LoanTimelineService';
 import { Surface } from '../components/Surface';
-import { StatusBadge } from '../components/StatusBadge';
+import { StatusBadge, DocumentsBadge } from '../components/StatusBadge';
 import { ApplicationSummaryCards } from '../components/loan-details/ApplicationSummaryCards';
 import { LoanTimeline } from '../components/loan-details/LoanTimeline';
 import { LoanActivityFeed } from '../components/loan-details/LoanActivityFeed';
@@ -80,6 +83,17 @@ const useStyles = makeStyles({
     fontSize: '16px',
     backgroundColor: tokens.colorBrandBackground2,
     color: tokens.colorBrandForeground2,
+  },
+  chipOrange: {
+    backgroundColor: tokens.colorPaletteDarkOrangeBackground2,
+    color: tokens.colorPaletteDarkOrangeForeground2,
+  },
+  docRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: tokens.spacingHorizontalM,
+    marginTop: tokens.spacingVerticalM,
   },
   quote: {
     display: 'flex',
@@ -284,6 +298,33 @@ export function ApplicationDetails() {
               />
             )}
           </Surface>
+
+          {classifyStatus(data.status) === 'resubmitted' && (
+            <Surface>
+              <Subtitle2 className={styles.sectionTitle}>
+                <span className={mergeClasses(styles.chip, styles.chipOrange)} aria-hidden>
+                  <ArrowSyncRegular />
+                </span>
+                Resubmission
+              </Subtitle2>
+              {data.resubmissionNotes ? (
+                <div className={styles.quote}>
+                  <ArrowSyncRegular className={styles.quoteIcon} aria-hidden />
+                  <Text className={styles.quoteText}>{data.resubmissionNotes}</Text>
+                </div>
+              ) : (
+                <EmptyState
+                  icon={<ArrowSyncRegular />}
+                  title="No resubmission notes"
+                  message="The applicant didn't include notes with this resubmission."
+                />
+              )}
+              <div className={styles.docRow}>
+                <Body1>Newly uploaded documents</Body1>
+                <DocumentsBadge uploaded={record?.cr174_documentsuploaded} />
+              </div>
+            </Surface>
+          )}
 
           <Surface>
             <Subtitle2 className={styles.sectionTitle}>

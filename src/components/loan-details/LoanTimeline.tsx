@@ -7,6 +7,7 @@ import {
   DocumentFilled,
   CircleFilled,
   CircleRegular,
+  ArrowSyncFilled,
 } from '@fluentui/react-icons';
 import type { ReactElement } from 'react';
 import { classifyStatus, formatRelative, type StatusKind } from '../../models/loan';
@@ -58,6 +59,11 @@ const useStyles = makeStyles({
     color: tokens.colorBrandForeground1,
     boxShadow: `0 0 0 4px color-mix(in srgb, ${tokens.colorBrandForeground1} 20%, transparent)`,
   },
+  dotOrange: {
+    backgroundColor: tokens.colorPaletteDarkOrangeBackground2,
+    color: tokens.colorPaletteDarkOrangeForeground1,
+    boxShadow: `0 0 0 4px color-mix(in srgb, ${tokens.colorPaletteDarkOrangeForeground1} 20%, transparent)`,
+  },
   line: {
     flexGrow: 1,
     width: '2px',
@@ -83,6 +89,7 @@ const currentIcon: Record<StatusKind, ReactElement> = {
   rejected: <DismissCircleFilled />,
   review: <ClockFilled />,
   received: <DocumentFilled />,
+  resubmitted: <ArrowSyncFilled />,
   other: <CircleFilled />,
 };
 
@@ -99,6 +106,7 @@ export function LoanTimeline({ steps }: LoanTimelineProps) {
     rejected: styles.dotRejected,
     review: styles.dotReview,
     received: styles.dotBrand,
+    resubmitted: styles.dotOrange,
     other: styles.dotBrand,
   };
 

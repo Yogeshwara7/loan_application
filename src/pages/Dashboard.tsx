@@ -14,6 +14,7 @@ import {
   AddRegular,
   ArrowClockwiseRegular,
   ArrowDownloadRegular,
+  ArrowSyncRegular,
   ClipboardTaskListLtrRegular,
   CheckmarkCircleRegular,
   ChevronRightRegular,
@@ -173,6 +174,10 @@ export function Dashboard() {
       approved: weekOverWeek(records, (r) => classifyStatus(r._cr174_status_label) === 'approved'),
       rejected: weekOverWeek(records, (r) => classifyStatus(r._cr174_status_label) === 'rejected'),
       review: weekOverWeek(records, (r) => classifyStatus(r._cr174_status_label) === 'review'),
+      resubmitted: weekOverWeek(
+        records,
+        (r) => classifyStatus(r._cr174_status_label) === 'resubmitted',
+      ),
     }),
     [records],
   );
@@ -205,6 +210,10 @@ export function Dashboard() {
           <div className={styles.heroStat}>
             <Subtitle1 className={styles.onBrand}>{metrics.review}</Subtitle1>
             <Caption1 className={styles.onBrandMuted}>Require review</Caption1>
+          </div>
+          <div className={styles.heroStat}>
+            <Subtitle1 className={styles.onBrand}>{metrics.resubmitted}</Subtitle1>
+            <Caption1 className={styles.onBrandMuted}>Resubmitted</Caption1>
           </div>
         </div>
       </div>
@@ -283,6 +292,14 @@ export function Dashboard() {
             tone="warning"
             deltaPct={trends.review.deltaPct}
             secondary="Awaiting a decision"
+          />
+          <KpiCard
+            label="ReSubmitted"
+            value={metrics.resubmitted}
+            icon={<ArrowSyncRegular />}
+            tone="orange"
+            deltaPct={trends.resubmitted.deltaPct}
+            secondary="Needs manager review"
           />
           <KpiCard
             label="Approval Rate"

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Badge,
   Button,
@@ -19,11 +19,13 @@ import {
   SearchBox,
   TableCellLayout,
   Text,
+  Tooltip,
   createTableColumn,
   makeStyles,
   tokens,
   type DataGridProps,
   type TableColumnDefinition,
+  type TableColumnSizingOptions,
 } from '@fluentui/react-components';
 import {
   MoreHorizontalRegular,
@@ -33,6 +35,7 @@ import {
   ArrowDownloadRegular,
   ChevronLeftRegular,
   ChevronRightRegular,
+  AlertUrgentRegular,
 } from '@fluentui/react-icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLoanData } from '../context/LoanDataContext';
@@ -57,6 +60,7 @@ const STATUS_OPTIONS: { key: StatusKind | 'all'; label: string }[] = [
   { key: 'all', label: 'All statuses' },
   { key: 'approved', label: 'Approved' },
   { key: 'review', label: 'Under Review' },
+  { key: 'resubmitted', label: 'ReSubmitted' },
   { key: 'rejected', label: 'Rejected' },
   { key: 'received', label: 'Received' },
 ];
@@ -99,7 +103,7 @@ const useStyles = makeStyles({
     overflowY: 'auto',
   },
   grid: {
-    minWidth: '1040px',
+    width: '100%',
     '& .fui-DataGridHeader': {
       position: 'sticky',
       top: 0,
@@ -127,6 +131,17 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalS,
   },
   muted: { color: tokens.colorNeutralForeground3 },
+  statusCell: { display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalXS },
+  attentionIcon: {
+    color: tokens.colorPaletteDarkOrangeForeground1,
+    fontSize: '16px',
+    flexShrink: 0,
+  },
+  // "Needs attention" highlight for applications resubmitted via the portal.
+  attentionRow: {
+    backgroundColor: `color-mix(in srgb, ${tokens.colorPaletteDarkOrangeBackground2} 35%, transparent)`,
+    boxShadow: `inset 3px 0 0 0 ${tokens.colorPaletteDarkOrangeForeground1}`,
+  },
 });
 
 const comparators: Record<string, (a: LoanApplication, b: LoanApplication) => number> = {
@@ -135,6 +150,7 @@ const comparators: Record<string, (a: LoanApplication, b: LoanApplication) => nu
   email: (a, b) => (a.cr174_applicantemail ?? '').localeCompare(b.cr174_applicantemail ?? ''),
   amount: (a, b) => (a.cr174_amount ?? 0) - (b.cr174_amount ?? 0),
   propertyValue: (a, b) => (a.cr174_propertyvalue ?? 0) - (b.cr174_propertyvalue ?? 0),
+  collegeName: (a, b) => (a.cr174_collegename ?? '').localeCompare(b.cr174_collegename ?? ''),
   loanType: (a, b) => (a._cr174_loantype_label ?? '').localeCompare(b._cr174_loantype_label ?? ''),
   status: (a, b) => (a._cr174_status_label ?? '').localeCompare(b._cr174_status_label ?? ''),
   documents: (a, b) =>
@@ -159,6 +175,47 @@ export function Applications() {
   const [sortState, setSortState] = useState<Parameters<NonNullable<DataGridProps['onSortChange']>>[1]>(
     { sortColumn: 'created', sortDirection: 'descending' },
   );
+
+  // Track the scroll container's width so columns can fill it proportionally.
+  const [containerWidth, setContainerWidth] = useState(0);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const setScrollRef = useCallback((el: HTMLDivElement | null) => {
+    resizeObserverRef.current?.disconnect();
+    if (!el) return;
+    setContainerWidth(el.clientWidth);
+    const observer = new ResizeObserver(() => setContainerWidth(el.clientWidth));
+    observer.observe(el);
+    resizeObserverRef.current = observer;
+  }, []);
+
+  // Proportional column widths that fill the available width (Email widest;
+  // status/documents/date compact; actions minimal). Recomputed on resize, with
+  // per-column minimums that trigger horizontal scroll only on narrow screens.
+  const columnSizingOptions = useMemo<TableColumnSizingOptions>(() => {
+    const ACTIONS_WIDTH = 48;
+    const weights: Record<string, { weight: number; min: number }> = {
+      reference: { weight: 1.4, min: 150 },
+      applicant: { weight: 1.2, min: 120 },
+      email: { weight: 1.9, min: 180 },
+      amount: { weight: 0.8, min: 92 },
+      propertyValue: { weight: 0.8, min: 92 },
+      collegeName: { weight: 1.1, min: 120 },
+      loanType: { weight: 1.0, min: 110 },
+      status: { weight: 0.8, min: 92 },
+      documents: { weight: 0.8, min: 96 },
+      created: { weight: 0.9, min: 104 },
+    };
+    const totalWeight = Object.values(weights).reduce((sum, w) => sum + w.weight, 0);
+    const available = Math.max(0, (containerWidth || 1180) - ACTIONS_WIDTH - 6);
+    const unit = available / totalWeight;
+    const options: TableColumnSizingOptions = {
+      actions: { minWidth: ACTIONS_WIDTH, idealWidth: ACTIONS_WIDTH },
+    };
+    for (const [columnId, { weight, min }] of Object.entries(weights)) {
+      options[columnId] = { minWidth: min, idealWidth: Math.max(min, Math.floor(unit * weight)) };
+    }
+    return options;
+  }, [containerWidth]);
 
   const typeOptions = useMemo(
     () => ['all', ...loanTypeBreakdown(records).map((b) => b.label)],
@@ -211,6 +268,14 @@ export function Applications() {
         ),
       }),
       createTableColumn<LoanApplication>({
+        columnId: 'collegeName',
+        compare: comparators.collegeName,
+        renderHeaderCell: () => 'College Name',
+        renderCell: (item) => (
+          <TableCellLayout truncate>{item.cr174_collegename || '—'}</TableCellLayout>
+        ),
+      }),
+      createTableColumn<LoanApplication>({
         columnId: 'loanType',
         compare: comparators.loanType,
         renderHeaderCell: () => 'Loan Type',
@@ -222,7 +287,16 @@ export function Applications() {
         columnId: 'status',
         compare: comparators.status,
         renderHeaderCell: () => 'Status',
-        renderCell: (item) => <StatusBadge label={item._cr174_status_label} />,
+        renderCell: (item) => (
+          <span className={styles.statusCell}>
+            <StatusBadge label={item._cr174_status_label} />
+            {classifyStatus(item._cr174_status_label) === 'resubmitted' && (
+              <Tooltip content="Needs attention — resubmitted by the applicant" relationship="label">
+                <AlertUrgentRegular className={styles.attentionIcon} aria-label="Needs attention" />
+              </Tooltip>
+            )}
+          </span>
+        ),
       }),
       createTableColumn<LoanApplication>({
         columnId: 'documents',
@@ -407,8 +481,12 @@ export function Applications() {
                 message="Try adjusting your search or filters."
               />
             ) : (
-              <div className={styles.gridScroll}>
+              <div className={styles.gridScroll} ref={setScrollRef}>
                 <DataGrid
+                  // Re-initialise column sizing when the container width changes
+                  // (in coarse buckets) so the grid always fills the available
+                  // width — resizableColumns otherwise ignores later updates.
+                  key={`grid-${Math.round(containerWidth / 16)}`}
                   className={styles.grid}
                   items={pageItems}
                   columns={columns}
@@ -417,6 +495,7 @@ export function Applications() {
                   sortState={sortState}
                   onSortChange={onSortChange}
                   resizableColumns
+                  columnSizingOptions={columnSizingOptions}
                   focusMode="composite"
                   aria-label="Loan applications"
                 >
@@ -429,7 +508,14 @@ export function Applications() {
                   </DataGridHeader>
                   <DataGridBody<LoanApplication>>
                     {({ item, rowId }) => (
-                      <DataGridRow<LoanApplication> key={rowId}>
+                      <DataGridRow<LoanApplication>
+                        key={rowId}
+                        className={
+                          classifyStatus(item._cr174_status_label) === 'resubmitted'
+                            ? styles.attentionRow
+                            : undefined
+                        }
+                      >
                         {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
                       </DataGridRow>
                     )}

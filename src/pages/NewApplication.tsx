@@ -38,6 +38,7 @@ import {
 } from '../models/loan';
 import { Surface } from '../components/Surface';
 import { LoanSummaryCard } from '../components/LoanSummaryCard';
+import { buildSubmissionStamp } from '../utils/referenceNumber';
 
 interface FormState {
   applicantName: string;
@@ -228,9 +229,22 @@ export function NewApplication() {
 
   const handleSubmit = useCallback(async () => {
     setSubmitError('');
+
+    // Final safety net: applicant name and loan type are required before submit.
+    if (!form.applicantName.trim() || (loanTypes.length > 0 && !form.loanType)) {
+      setSubmitError('Please provide the applicant name and loan type before submitting.');
+      return;
+    }
+
     setSubmitting(true);
     try {
+      // Generate the reference number and created date at the moment of submission,
+      // mirroring the Canvas app ("LN-" & Text(Now(), "yyyymmddhhmmss") and Now()).
+      const { referenceNumber, createdDate } = buildSubmissionStamp();
+
       const record: Omit<LoanApplication, 'cr174_loanapplicid'> = {
+        cr174_referencenumber: referenceNumber,
+        cr174_createddate: createdDate,
         cr174_applicantname: form.applicantName.trim(),
         cr174_applicantemail: form.applicantEmail.trim(),
         cr174_amount: Number(form.amount),
@@ -238,11 +252,14 @@ export function NewApplication() {
         ...(category === 'education' ? { cr174_collegename: form.collegeName.trim() } : {}),
         ...(category === 'home' ? { cr174_propertyvalue: Number(form.propertyValue) } : {}),
       };
+
       const result = await Cr174_loanapplicsService.create(record);
       if (!result.success) {
         throw result.error ?? new Error('The service returned an unsuccessful response.');
       }
-      setCreatedRef(result.data?.cr174_referencenumber ?? '');
+
+      // Prefer the value echoed back by Dataverse; fall back to the one we generated.
+      setCreatedRef(result.data?.cr174_referencenumber ?? referenceNumber);
       window.localStorage.removeItem(DRAFT_KEY);
       void reload();
       setStep(3);
@@ -253,7 +270,7 @@ export function NewApplication() {
     } finally {
       setSubmitting(false);
     }
-  }, [form, category, reload]);
+  }, [form, category, loanTypes.length, reload]);
 
   const startAnother = () => {
     setForm(EMPTY_FORM);
@@ -392,7 +409,6 @@ export function NewApplication() {
                   required
                   validationState={errors.propertyValue ? 'error' : 'none'}
                   validationMessage={errors.propertyValue}
-                  hint="Required for home loans."
                 >
                   <Input
                     type="number"
@@ -411,7 +427,6 @@ export function NewApplication() {
                   required
                   validationState={errors.collegeName ? 'error' : 'none'}
                   validationMessage={errors.collegeName}
-                  hint="Required for education loans."
                 >
                   <Input
                     value={form.collegeName}

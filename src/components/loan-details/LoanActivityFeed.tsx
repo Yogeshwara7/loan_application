@@ -5,6 +5,7 @@ import {
   ClockFilled,
   DocumentFilled,
   CircleFilled,
+  ArrowSyncFilled,
 } from '@fluentui/react-icons';
 import type { ReactElement } from 'react';
 import { classifyStatus, formatRelative, type StatusKind } from '../../models/loan';
@@ -42,6 +43,10 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorBrandBackground2,
     color: tokens.colorBrandForeground1,
   },
+  dotOrange: {
+    backgroundColor: tokens.colorPaletteDarkOrangeBackground2,
+    color: tokens.colorPaletteDarkOrangeForeground1,
+  },
   body: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXXS, minWidth: 0 },
   headline: { fontWeight: tokens.fontWeightSemibold },
   time: { color: tokens.colorNeutralForeground4 },
@@ -52,11 +57,14 @@ const categoryIcon: Record<StatusKind, ReactElement> = {
   rejected: <DismissCircleFilled />,
   review: <ClockFilled />,
   received: <DocumentFilled />,
+  resubmitted: <ArrowSyncFilled />,
   other: <CircleFilled />,
 };
 
 function describe(step: LoanTimelineStep): string {
   const name = step.step.toLowerCase();
+  // Keep the flow's own wording for resubmission events (checked before "submit").
+  if (name.includes('resubmit') || name.includes('re-submit')) return step.step;
   if (name.includes('submit')) return 'Application was submitted';
   if (name.includes('receiv')) return 'Application was received';
   if (name.includes('current')) return `Current status: ${step.status || 'Updated'}`;
@@ -76,6 +84,7 @@ export function LoanActivityFeed({ steps }: LoanActivityFeedProps) {
     rejected: styles.dotRed,
     review: styles.dotAmber,
     received: styles.dotBrand,
+    resubmitted: styles.dotOrange,
     other: styles.dotBrand,
   };
 

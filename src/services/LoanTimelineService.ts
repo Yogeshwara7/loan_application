@@ -1,5 +1,5 @@
 import type { LoanApplication } from '../models/loan';
-import { statusText } from '../models/loan';
+import { STATUS_CHOICE_LABELS, statusText } from '../models/loan';
 
 /** A single lifecycle step as returned by the Power Automate flow. */
 export interface LoanTimelineStep {
@@ -19,6 +19,8 @@ export interface LoanTimelineResponse {
   applicantName: string;
   status: string;
   officerComments: string;
+  /** Notes the applicant entered when resubmitting via the Canvas portal. */
+  resubmissionNotes: string;
   timeline: LoanTimelineStep[];
 }
 
@@ -35,6 +37,7 @@ interface RawTimelineResponse {
   applicantName?: unknown;
   status?: unknown;
   officerComments?: unknown;
+  resubmissionNotes?: unknown;
   timeline?: unknown;
 }
 
@@ -72,21 +75,31 @@ function parseTimeline(value: unknown): LoanTimelineStep[] {
 
 const isNumericCode = (value: string): boolean => /^\d+$/.test(value);
 
-function normalize(data: RawTimelineResponse, referenceNumber: string): LoanTimelineResponse {
-  const status = asString(data.status);
+/**
+ * Resolve a possibly-numeric status to a friendly label. Some flows emit the
+ * raw Dataverse choice value (e.g. "470160005") instead of its label; map known
+ * codes (incl. ReSubmitted) via STATUS_CHOICE_LABELS, else use the supplied
+ * fallback (the top-level status) so the UI never shows a bare number.
+ */
+function resolveStatusLabel(raw: string, fallback: string): string {
+  if (!isNumericCode(raw)) return raw;
+  return STATUS_CHOICE_LABELS[raw] ?? (fallback && !isNumericCode(fallback) ? fallback : raw);
+}
 
-  // Some flows emit the raw Dataverse choice value (e.g. "470160000") for a
-  // step instead of its label. When that happens, fall back to the friendly
-  // top-level status so the UI never shows a numeric code.
-  const timeline = parseTimeline(data.timeline).map((step) =>
-    isNumericCode(step.status) && status && !isNumericCode(status) ? { ...step, status } : step,
-  );
+function normalize(data: RawTimelineResponse, referenceNumber: string): LoanTimelineResponse {
+  const status = resolveStatusLabel(asString(data.status), '');
+
+  const timeline = parseTimeline(data.timeline).map((step) => ({
+    ...step,
+    status: resolveStatusLabel(step.status, status),
+  }));
 
   return {
     referenceNumber: asString(data.referenceNumber) || referenceNumber,
     applicantName: asString(data.applicantName),
     status,
     officerComments: asString(data.officerComments),
+    resubmissionNotes: asString(data.resubmissionNotes),
     timeline,
   };
 }
@@ -135,6 +148,7 @@ export function deriveTimelineFromRecord(record: LoanApplication): LoanTimelineR
     applicantName: record.cr174_applicantname ?? '',
     status,
     officerComments: '',
+    resubmissionNotes: '',
     timeline: [
       { step: 'Application Submitted', status: 'Completed' },
       { step: 'Application Received', status: 'Completed' },

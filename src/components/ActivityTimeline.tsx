@@ -4,6 +4,7 @@ import {
   DismissCircleFilled,
   ClockFilled,
   DocumentFilled,
+  ArrowSyncFilled,
 } from '@fluentui/react-icons';
 import type { ReactElement } from 'react';
 import { classifyStatus, formatRelative, type ActivityItem, type StatusKind } from '../models/loan';
@@ -63,6 +64,7 @@ const iconByKind: Record<StatusKind, ReactElement> = {
   rejected: <DismissCircleFilled />,
   review: <ClockFilled />,
   received: <DocumentFilled />,
+  resubmitted: <ArrowSyncFilled />,
   other: <DocumentFilled />,
 };
 
@@ -74,6 +76,8 @@ function eventText(kind: StatusKind): string {
       return 'Application rejected';
     case 'review':
       return 'Moved to review';
+    case 'resubmitted':
+      return 'Applicant resubmitted';
     default:
       return 'Application submitted';
   }

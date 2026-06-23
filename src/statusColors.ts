@@ -11,6 +11,7 @@ export const statusColorToken: Record<StatusKind, string> = {
   rejected: tokens.colorPaletteRedForeground1,
   review: tokens.colorPaletteMarigoldForeground1,
   received: tokens.colorBrandForeground1,
+  resubmitted: tokens.colorPaletteDarkOrangeForeground1,
   other: tokens.colorNeutralForeground3,
 };
 
