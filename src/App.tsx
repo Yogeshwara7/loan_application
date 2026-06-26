@@ -8,6 +8,7 @@ import { ApplicationDetails } from './pages/ApplicationDetails';
 import { Analytics } from './pages/Analytics';
 import { NewApplication } from './pages/NewApplication';
 import { MyProfile } from './pages/MyProfile';
+import { Admin } from './pages/Admin';
 
 const useStyles = makeStyles({
   shell: {
@@ -53,6 +54,7 @@ export function App() {
               <Route path="/applications/:id" element={<ApplicationDetails />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/new-application" element={<NewApplication />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="/my-profile" element={<MyProfile />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>

@@ -5,6 +5,7 @@ import {
   Caption1,
   MessageBar,
   MessageBarBody,
+  Spinner,
   Subtitle2,
   Text,
   Title2,
@@ -16,19 +17,27 @@ import {
   ArrowLeftRegular,
   ArrowClockwiseRegular,
   ArrowSyncRegular,
+  CheckmarkCircleRegular,
   CommentRegular,
   HistoryRegular,
   StreamRegular,
 } from '@fluentui/react-icons';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Cr174_loanapplicsService } from '../generated';
 import { useLoanData } from '../context/LoanDataContext';
-import { classifyStatus, findApplication, toErrorMessage } from '../models/loan';
+import { useCurrentUser } from '../context/UserContext';
+import { classifyStatus, findApplication, formatCurrency, toErrorMessage } from '../models/loan';
+import { formatDateTime } from '../models/errorLog';
 import {
   deriveTimelineFromRecord,
   getLoanTimeline,
   isTimelineFlowConfigured,
   type LoanTimelineResponse,
 } from '../services/LoanTimelineService';
+import {
+  logTeamsNotificationFailure,
+  postLoanApprovedCard,
+} from '../services/TeamsNotificationService';
 import { Surface } from '../components/Surface';
 import { StatusBadge, DocumentsBadge } from '../components/StatusBadge';
 import { ApplicationSummaryCards } from '../components/loan-details/ApplicationSummaryCards';
@@ -51,6 +60,7 @@ const useStyles = makeStyles({
   },
   headerLeft: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalS, minWidth: 0 },
   back: { alignSelf: 'flex-start' },
+  headerActions: { display: 'flex', gap: tokens.spacingHorizontalS, flexWrap: 'wrap' },
   titleRow: {
     display: 'flex',
     alignItems: 'center',
@@ -112,7 +122,8 @@ export function ApplicationDetails() {
   const navigate = useNavigate();
   const { id = '' } = useParams();
   const decodedId = decodeURIComponent(id);
-  const { records, status: dataStatus } = useLoanData();
+  const { records, status: dataStatus, reload } = useLoanData();
+  const { user } = useCurrentUser();
 
   const record = findApplication(records, decodedId);
   const referenceNumber = record?.cr174_referencenumber ?? decodedId;
@@ -120,6 +131,11 @@ export function ApplicationDetails() {
   const [pageStatus, setPageStatus] = useState<PageStatus>('loading');
   const [data, setData] = useState<LoanTimelineResponse | null>(null);
   const [error, setError] = useState<string>('');
+  const [approving, setApproving] = useState(false);
+  const [approveBanner, setApproveBanner] = useState<{
+    intent: 'success' | 'warning' | 'error';
+    text: string;
+  } | null>(null);
 
   const load = useCallback(
     async (signal?: AbortSignal) => {
@@ -161,6 +177,70 @@ export function ApplicationDetails() {
     void load(controller.signal);
     return () => controller.abort();
   }, [dataStatus, load]);
+
+  // Day 16: approve the loan in Dataverse, then post an Adaptive Card to Teams.
+  const handleApprove = useCallback(async () => {
+    const recordId = record?.cr174_loanapplicid;
+    if (!recordId) {
+      setApproveBanner({
+        intent: 'error',
+        text: 'Cannot approve: the application record was not found in Dataverse.',
+      });
+      return;
+    }
+    setApproving(true);
+    setApproveBanner(null);
+    try {
+      // 1. Mark the application Approved (choice value 470160002) via the
+      //    existing generated Dataverse service.
+      const updateResult = await Cr174_loanapplicsService.update(recordId, {
+        cr174_status: 470160002,
+      });
+      if (!updateResult.success) {
+        throw updateResult.error ?? new Error('Failed to update the application status.');
+      }
+
+      // 2. Post the approval Adaptive Card to Teams (best-effort — a Teams
+      //    failure must not undo the approval).
+      let teamsNote: string;
+      try {
+        await postLoanApprovedCard({
+          applicantName: record?.cr174_applicantname ?? '—',
+          referenceNumber: record?.cr174_referencenumber ?? referenceNumber,
+          loanType: record?._cr174_loantype_label ?? '—',
+          loanAmount: formatCurrency(record?.cr174_amount),
+          approvingOfficer: user.fullName || 'Unknown officer',
+          approvalTime: formatDateTime(new Date().toISOString()),
+        });
+        teamsNote = ' An Adaptive Card was posted to the Approved Loans Teams channel.';
+      } catch (teamsErr) {
+        // Approval already succeeded — do NOT roll back. Log the Teams failure
+        // to the SharePoint Flow Error Logs list instead.
+        const teamsError = toErrorMessage(teamsErr, 'unknown error');
+        await logTeamsNotificationFailure({
+          applicantName: record?.cr174_applicantname ?? '—',
+          referenceNumber: record?.cr174_referencenumber ?? referenceNumber,
+          errorMessage: teamsError,
+        });
+        teamsNote = ` The Teams notification failed and was logged to Flow Error Logs: ${teamsError}`;
+      }
+
+      setApproveBanner({
+        intent: teamsNote.includes('failed') ? 'warning' : 'success',
+        text: `Application approved.${teamsNote}`,
+      });
+
+      await reload();
+      void load();
+    } catch (err) {
+      setApproveBanner({
+        intent: 'error',
+        text: toErrorMessage(err, 'The application could not be approved.'),
+      });
+    } finally {
+      setApproving(false);
+    }
+  }, [record, referenceNumber, user.fullName, reload, load]);
 
   const backButton = (
     <Button
@@ -237,14 +317,33 @@ export function ApplicationDetails() {
           </div>
           <Caption1 className={styles.muted}>Applicant: {displayName}</Caption1>
         </div>
-        <Button
-          appearance="secondary"
-          icon={<ArrowClockwiseRegular />}
-          onClick={() => void load()}
-        >
-          Refresh
-        </Button>
+        <div className={styles.headerActions}>
+          {classifyStatus(data.status) !== 'approved' && record && (
+            <Button
+              appearance="primary"
+              icon={approving ? <Spinner size="tiny" /> : <CheckmarkCircleRegular />}
+              onClick={() => void handleApprove()}
+              disabled={approving}
+            >
+              {approving ? 'Approving…' : 'Approve & Notify'}
+            </Button>
+          )}
+          <Button
+            appearance="secondary"
+            icon={<ArrowClockwiseRegular />}
+            onClick={() => void load()}
+            disabled={approving}
+          >
+            Refresh
+          </Button>
+        </div>
       </Surface>
+
+      {approveBanner && (
+        <MessageBar intent={approveBanner.intent}>
+          <MessageBarBody>{approveBanner.text}</MessageBarBody>
+        </MessageBar>
+      )}
 
       {!isTimelineFlowConfigured() && (
         <MessageBar intent="info">

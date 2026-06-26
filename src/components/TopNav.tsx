@@ -29,6 +29,8 @@ import {
   AddCircleFilled,
   DataTrendingRegular,
   DataTrendingFilled,
+  WrenchRegular,
+  WrenchFilled,
   AlertRegular,
   WeatherMoonRegular,
   WeatherSunnyRegular,
@@ -48,6 +50,7 @@ const DashboardIcon = bundleIcon(GridFilled, GridRegular);
 const ApplicationsIcon = bundleIcon(DocumentTableFilled, DocumentTableRegular);
 const NewAppIcon = bundleIcon(AddCircleFilled, AddCircleRegular);
 const AnalyticsIcon = bundleIcon(DataTrendingFilled, DataTrendingRegular);
+const AdminIcon = bundleIcon(WrenchFilled, WrenchRegular);
 
 interface NavItem {
   path: string;
@@ -60,6 +63,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { path: '/applications', label: 'Applications', icon: <ApplicationsIcon /> },
   { path: '/new-application', label: 'New Application', icon: <NewAppIcon /> },
   { path: '/analytics', label: 'Analytics', icon: <AnalyticsIcon /> },
+  { path: '/admin', label: 'Admin', icon: <AdminIcon /> },
 ];
 
 const useStyles = makeStyles({

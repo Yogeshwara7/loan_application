@@ -33,6 +33,32 @@
           }
         }
       }
+    },
+    "280dac2c-2965-477f-9815-de4343878ee6": {
+      "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+      "displayName": "SharePoint",
+      "dataSources": [
+        "flowerrorlogs"
+      ],
+      "dataSets": {
+        "https://innorvellc-my.sharepoint.com/personal/yogeshwara_b_innorve_com": {
+          "dataSources": {
+            "flowerrorlogs": {
+              "tableName": "Flow Error Logs"
+            }
+          }
+        }
+      },
+      "xrmConnectionReferenceLogicalName": "it_LoanSharePointConnection"
+    },
+    "2be1fbf5-8a26-4eee-80c5-fea22a5a1255": {
+      "id": "/providers/Microsoft.PowerApps/apis/shared_teams",
+      "displayName": "Microsoft Teams",
+      "dataSources": [
+        "teams"
+      ],
+      "dataSets": {},
+      "xrmConnectionReferenceLogicalName": "it_LoanTeamsConnection"
     }
   },
   "databaseReferences": {}
