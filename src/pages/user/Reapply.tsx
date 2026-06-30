@@ -147,6 +147,7 @@ export function Reapply() {
     applicantName: record.cr174_applicantname ?? '',
     applicantEmail: record.cr174_applicantemail ?? '',
     phone: record.cr174_phonenumber ?? '',
+    userNote: record.cr174_usernote ?? '',
     collegeName: record.cr174_collegename ?? '',
     amount: record.cr174_amount != null ? String(record.cr174_amount) : '',
     propertyValue: record.cr174_propertyvalue != null ? String(record.cr174_propertyvalue) : '',

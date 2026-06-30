@@ -16,6 +16,7 @@ import {
   Subtitle1,
   Subtitle2,
   Text,
+  Textarea,
   Title2,
   makeStyles,
   mergeClasses,
@@ -57,6 +58,7 @@ interface FormState {
   amount: string;
   propertyValue: string;
   loanType: string;
+  userNote: string;
 }
 
 type FormErrors = Partial<Record<keyof FormState, string>>;
@@ -72,6 +74,7 @@ const EMPTY_FORM: FormState = {
   amount: '',
   propertyValue: '',
   loanType: '',
+  userNote: '',
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -377,6 +380,7 @@ export function LoanApplicationForm({
         cr174_applicantemail: form.applicantEmail.trim(),
         cr174_amount: Number(form.amount),
         ...(form.phone.trim() ? { cr174_phonenumber: form.phone.trim() } : {}),
+        ...(form.userNote.trim() ? { cr174_usernote: form.userNote.trim() } : {}),
         ...(statusCode !== undefined ? { cr174_status: statusCode } : {}),
         ...(form.loanType ? { cr174_loantype: Number(form.loanType) } : {}),
         ...(category === 'education' ? { cr174_collegename: form.collegeName.trim() } : {}),
@@ -630,6 +634,18 @@ export function LoanApplicationForm({
                   No additional details are required for this loan type.
                 </Caption1>
               )}
+              <Field
+                label="Notes"
+                hint="Anything you'd like the loan officer to know (optional)."
+              >
+                <Textarea
+                  value={form.userNote}
+                  onChange={(_e, d) => update('userNote', d.value)}
+                  placeholder="Add any additional notes…"
+                  rows={3}
+                  resize="vertical"
+                />
+              </Field>
             </div>
 
             {/* Section 3 — Documents (attach now; uploaded to SharePoint on submit) */}
@@ -703,6 +719,7 @@ export function LoanApplicationForm({
               applicantName={form.applicantName}
               applicantEmail={form.applicantEmail}
               phone={form.phone}
+              note={form.userNote}
               collegeName={category === 'education' ? form.collegeName : ''}
               amount={Number(form.amount)}
               propertyValue={category === 'home' ? Number(form.propertyValue) : undefined}

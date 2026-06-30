@@ -16,9 +16,7 @@ import {
   ArrowDownloadRegular,
   ArrowSyncRegular,
   ClipboardTaskListLtrRegular,
-  CheckmarkCircleRegular,
   ChevronRightRegular,
-  ClockRegular,
   DataTrendingRegular,
   DismissCircleRegular,
   DocumentBulletListRegular,
@@ -269,14 +267,6 @@ export function Dashboard() {
             secondary={`${metrics.received} received · ${metrics.review} in review`}
           />
           <KpiCard
-            label="Approved"
-            value={metrics.approved}
-            icon={<CheckmarkCircleRegular />}
-            tone="success"
-            deltaPct={trends.approved.deltaPct}
-            secondary={`${pctOfTotal(metrics.approved)}% of all applications`}
-          />
-          <KpiCard
             label="Rejected"
             value={metrics.rejected}
             icon={<DismissCircleRegular />}
@@ -284,14 +274,6 @@ export function Dashboard() {
             deltaPct={trends.rejected.deltaPct}
             invertTrend
             secondary={`${pctOfTotal(metrics.rejected)}% of all applications`}
-          />
-          <KpiCard
-            label="Under Review"
-            value={metrics.review}
-            icon={<ClockRegular />}
-            tone="warning"
-            deltaPct={trends.review.deltaPct}
-            secondary="Awaiting a decision"
           />
           <KpiCard
             label="ReSubmitted"

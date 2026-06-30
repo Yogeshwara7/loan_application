@@ -24,6 +24,7 @@ export interface LoanSummaryCardProps {
   applicantName: string;
   applicantEmail: string;
   phone?: string;
+  note?: string;
   collegeName: string;
   amount?: number | null;
   propertyValue?: number | null;
@@ -39,6 +40,7 @@ export function LoanSummaryCard({
   applicantName,
   applicantEmail,
   phone,
+  note,
   collegeName,
   amount,
   propertyValue,
@@ -63,6 +65,7 @@ export function LoanSummaryCard({
     ...(propertyValue !== undefined && propertyValue !== null
       ? [{ label: 'Property Value', value: formatCurrency(propertyValue) }]
       : []),
+    ...(note && note.trim() ? [{ label: 'Notes', value: note.trim() }] : []),
     ...(statusLabel !== undefined
       ? [{ label: 'Status', value: <StatusBadge label={statusLabel} /> }]
       : []),
