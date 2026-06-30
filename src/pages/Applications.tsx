@@ -15,7 +15,6 @@ import {
   Spinner,
   TableCellLayout,
   Text,
-  Tooltip,
   createTableColumn,
   makeStyles,
   tokens,
@@ -28,7 +27,6 @@ import {
   ArrowClockwiseRegular,
   ChevronLeftRegular,
   ChevronRightRegular,
-  AlertUrgentRegular,
 } from '@fluentui/react-icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLoanData } from '../context/LoanDataContext';
@@ -128,11 +126,6 @@ const useStyles = makeStyles({
   },
   muted: { color: tokens.colorNeutralForeground3 },
   statusCell: { display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalXS },
-  attentionIcon: {
-    color: tokens.colorPaletteDarkOrangeForeground1,
-    fontSize: '16px',
-    flexShrink: 0,
-  },
 });
 
 const comparators: Record<string, (a: LoanApplication, b: LoanApplication) => number> = {
@@ -291,11 +284,6 @@ export function Applications() {
         renderCell: (item) => (
           <span className={styles.statusCell}>
             <StatusBadge label={item._cr174_status_label} />
-            {classifyStatus(item._cr174_status_label) === 'resubmitted' && (
-              <Tooltip content="Needs attention — resubmitted by the applicant" relationship="label">
-                <AlertUrgentRegular className={styles.attentionIcon} aria-label="Needs attention" />
-              </Tooltip>
-            )}
           </span>
         ),
       }),

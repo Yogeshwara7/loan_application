@@ -1,5 +1,4 @@
 import {
-  Body1,
   Button,
   Caption1,
   MessageBar,
@@ -16,7 +15,6 @@ import {
   ArrowSyncRegular,
   ArrowDownloadRegular,
   PersonRegular,
-  DocumentMultipleRegular,
   CommentRegular,
   HistoryRegular,
 } from '@fluentui/react-icons';
@@ -38,6 +36,7 @@ import { StatusBadge, DocumentsBadge } from '../../components/StatusBadge';
 import { LoadingState } from '../../components/LoadingState';
 import { EmptyState } from '../../components/EmptyState';
 import { LoanTimeline } from '../../components/loan-details/LoanTimeline';
+import { ApplicationDocuments } from '../../components/loan-details/ApplicationDocuments';
 
 const useStyles = makeStyles({
   root: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalL },
@@ -87,14 +86,6 @@ const useStyles = makeStyles({
   },
   quoteIcon: { color: tokens.colorBrandForeground1, fontSize: '20px', flexShrink: 0 },
   quoteText: { fontStyle: 'italic' },
-  docList: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalS },
-  docRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: tokens.spacingHorizontalM,
-    paddingBlock: tokens.spacingVerticalXS,
-  },
   actions: { display: 'flex', gap: tokens.spacingHorizontalM, flexWrap: 'wrap' },
   statusCell: {
     display: 'flex',
@@ -221,8 +212,6 @@ export function MyApplicationDetails() {
   const category = classifyLoanType(record._cr174_loantype_label);
   const panel = statusPanel(kind);
   const remarks = (record.cr174_officercomments ?? '').trim();
-  const attachments = record['{Attachments}'] ?? [];
-  const hasDocuments = Boolean(record.cr174_documentsuploaded) || attachments.length > 0;
 
   // Reuse the admin timeline: derive steps from the record already in context.
   const timeline = deriveTimelineFromRecord(record);
@@ -323,31 +312,10 @@ export function MyApplicationDetails() {
             </Surface>
           )}
 
-          {hasDocuments && (
-            <Surface>
-              <Subtitle2 className={styles.sectionTitle}>
-                <span className={styles.chip} aria-hidden>
-                  <DocumentMultipleRegular />
-                </span>
-                Uploaded Documents
-              </Subtitle2>
-              <div className={styles.docList}>
-                {attachments.length > 0 ? (
-                  attachments.map((doc, index) => (
-                    <div className={styles.docRow} key={doc.Id ?? index}>
-                      <Body1>{doc.DisplayName ?? `Document ${index + 1}`}</Body1>
-                      <DocumentsBadge uploaded />
-                    </div>
-                  ))
-                ) : (
-                  <div className={styles.docRow}>
-                    <Body1>Application documents</Body1>
-                    <DocumentsBadge uploaded />
-                  </div>
-                )}
-              </div>
-            </Surface>
-          )}
+          <ApplicationDocuments
+            referenceNumber={referenceNumber}
+            flagged={record.cr174_documentsuploaded}
+          />
         </div>
 
         {/* Right column: timeline */}

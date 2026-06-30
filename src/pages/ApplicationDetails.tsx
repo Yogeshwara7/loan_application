@@ -57,6 +57,7 @@ import {
   logTeamsNotificationFailure,
   postLoanApprovedCard,
 } from '../services/TeamsNotificationService';
+import { sendApplicationStatusEmail } from '../services/ApplicantNotificationService';
 import { Surface } from '../components/Surface';
 import { StatusBadge } from '../components/StatusBadge';
 import { ApplicationSummaryCards } from '../components/loan-details/ApplicationSummaryCards';
@@ -253,6 +254,9 @@ export function ApplicationDetails() {
           throw updateResult.error ?? new Error('Failed to update the application status.');
         }
 
+        let intent: 'success' | 'warning' = 'success';
+        let message: string;
+
         if (statusCode === STATUS_APPROVED) {
           // Approve workflow, unchanged: post the Teams card (best-effort — a Teams
           // failure does NOT roll back the approval) and log failures to SharePoint.
@@ -275,14 +279,35 @@ export function ApplicationDetails() {
               errorMessage: teamsError,
             });
             teamsNote = ` The Teams notification failed and was logged to Flow Error Logs: ${teamsError}`;
+            intent = 'warning';
           }
-          setActionBanner({
-            intent: teamsNote.includes('failed') ? 'warning' : 'success',
-            text: `Application approved.${teamsNote}`,
-          });
+          message = `Application approved.${teamsNote}`;
+        } else if (statusCode === STATUS_REJECTED) {
+          message = 'Application rejected.';
         } else {
-          setActionBanner({ intent: 'success', text: `Status updated to ${statusLabel}.` });
+          message = `Status updated to ${statusLabel}.`;
         }
+
+        // Notify the applicant by email (best-effort — a send failure never rolls
+        // back the status change).
+        const applicantEmail = record?.cr174_applicantemail?.trim();
+        if (applicantEmail) {
+          try {
+            await sendApplicationStatusEmail({
+              to: applicantEmail,
+              applicantName: record?.cr174_applicantname ?? 'Applicant',
+              referenceNumber: record?.cr174_referencenumber ?? referenceNumber,
+              statusLabel,
+              officerComments: statusCode === STATUS_REJECTED ? officerComments : undefined,
+            });
+            message += ` The applicant was emailed at ${applicantEmail}.`;
+          } catch (emailErr) {
+            message += ` The applicant email could not be sent: ${toErrorMessage(emailErr, 'unknown error')}`;
+            intent = 'warning';
+          }
+        }
+
+        setActionBanner({ intent, text: message });
 
         // Sync the shared Dataverse records; the load effect then silently
         // refreshes this page's data (no skeleton) with the persisted status.
