@@ -10,13 +10,9 @@ import {
   DataGridRow,
   Dropdown,
   Field,
-  Menu,
-  MenuItem,
-  MenuList,
-  MenuPopover,
-  MenuTrigger,
   Option,
   SearchBox,
+  Spinner,
   TableCellLayout,
   Text,
   Tooltip,
@@ -28,11 +24,8 @@ import {
   type TableColumnSizingOptions,
 } from '@fluentui/react-components';
 import {
-  MoreHorizontalRegular,
-  EyeRegular,
-  HistoryRegular,
-  DocumentRegular,
   ArrowDownloadRegular,
+  ArrowClockwiseRegular,
   ChevronLeftRegular,
   ChevronRightRegular,
   AlertUrgentRegular,
@@ -114,6 +107,9 @@ const useStyles = makeStyles({
       fontWeight: tokens.fontWeightSemibold,
       color: tokens.colorNeutralForeground2,
     },
+    '& .fui-DataGridBody .fui-DataGridRow': {
+      cursor: 'pointer',
+    },
     '& .fui-DataGridBody .fui-DataGridRow:hover': {
       backgroundColor: tokens.colorNeutralBackground2Hover,
     },
@@ -137,11 +133,6 @@ const useStyles = makeStyles({
     fontSize: '16px',
     flexShrink: 0,
   },
-  // "Needs attention" highlight for applications resubmitted via the portal.
-  attentionRow: {
-    backgroundColor: `color-mix(in srgb, ${tokens.colorPaletteDarkOrangeBackground2} 35%, transparent)`,
-    boxShadow: `inset 3px 0 0 0 ${tokens.colorPaletteDarkOrangeForeground1}`,
-  },
 });
 
 const comparators: Record<string, (a: LoanApplication, b: LoanApplication) => number> = {
@@ -164,6 +155,16 @@ export function Applications() {
   const navigate = useNavigate();
   const { records, status, reload } = useLoanData();
   const [searchParams] = useSearchParams();
+
+  const [refreshing, setRefreshing] = useState(false);
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await reload();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [reload]);
 
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
   const [statusFilter, setStatusFilter] = useState<StatusKind | 'all'>(
@@ -222,9 +223,9 @@ export function Applications() {
     [records],
   );
 
-  const goToDetails = (record: LoanApplication, hash = '') => {
+  const goToDetails = (record: LoanApplication) => {
     const id = record.cr174_loanapplicid ?? record.cr174_referencenumber ?? '';
-    navigate(`/applications/${encodeURIComponent(id)}${hash}`);
+    navigate(`/admin/applications/${encodeURIComponent(id)}`);
   };
 
   const columns: TableColumnDefinition<LoanApplication>[] = useMemo(
@@ -314,29 +315,16 @@ export function Applications() {
         columnId: 'actions',
         renderHeaderCell: () => '',
         renderCell: (item) => (
-          <Menu>
-            <MenuTrigger disableButtonEnhancement>
-              <Button
-                appearance="subtle"
-                size="small"
-                icon={<MoreHorizontalRegular />}
-                aria-label="Row actions"
-              />
-            </MenuTrigger>
-            <MenuPopover>
-              <MenuList>
-                <MenuItem icon={<EyeRegular />} onClick={() => goToDetails(item)}>
-                  View
-                </MenuItem>
-                <MenuItem icon={<HistoryRegular />} onClick={() => goToDetails(item, '#timeline')}>
-                  View Timeline
-                </MenuItem>
-                <MenuItem icon={<DocumentRegular />} onClick={() => goToDetails(item, '#documents')}>
-                  View Documents
-                </MenuItem>
-              </MenuList>
-            </MenuPopover>
-          </Menu>
+          <Button
+            appearance="subtle"
+            size="small"
+            icon={<ChevronRightRegular />}
+            aria-label={`View details for ${item.cr174_referencenumber ?? 'application'}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              goToDetails(item);
+            }}
+          />
         ),
       }),
     ],
@@ -405,13 +393,22 @@ export function Applications() {
         title="Applications"
         subtitle="Search, filter and manage every loan application."
         actions={
-          <Button
-            icon={<ArrowDownloadRegular />}
-            onClick={() => downloadApplicationsCsv(sorted)}
-            disabled={sorted.length === 0}
-          >
-            Export CSV
-          </Button>
+          <>
+            <Button
+              icon={refreshing ? <Spinner size="tiny" /> : <ArrowClockwiseRegular />}
+              onClick={() => void handleRefresh()}
+              disabled={refreshing}
+            >
+              {refreshing ? 'Refreshing…' : 'Refresh'}
+            </Button>
+            <Button
+              icon={<ArrowDownloadRegular />}
+              onClick={() => downloadApplicationsCsv(sorted)}
+              disabled={sorted.length === 0}
+            >
+              Export CSV
+            </Button>
+          </>
         }
       />
 
@@ -510,11 +507,7 @@ export function Applications() {
                     {({ item, rowId }) => (
                       <DataGridRow<LoanApplication>
                         key={rowId}
-                        className={
-                          classifyStatus(item._cr174_status_label) === 'resubmitted'
-                            ? styles.attentionRow
-                            : undefined
-                        }
+                        onClick={() => goToDetails(item)}
                       >
                         {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
                       </DataGridRow>

@@ -111,9 +111,9 @@ export function LoanActivityFeed({ steps }: LoanActivityFeedProps) {
             </span>
             <div className={styles.body}>
               <Text className={styles.headline}>{describe(step)}</Text>
-              <Caption1 className={styles.time}>
-                {step.timestamp ? formatRelative(step.timestamp) : 'Awaiting timestamp'}
-              </Caption1>
+              {step.timestamp && (
+                <Caption1 className={styles.time}>{formatRelative(step.timestamp)}</Caption1>
+              )}
             </div>
           </div>
         );

@@ -90,8 +90,7 @@ export const dataSourcesInfo = {
             "name": "lookAheadTimeInMinutes",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -138,8 +137,7 @@ export const dataSourcesInfo = {
             "name": "lookAheadTimeInMinutes",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -186,8 +184,7 @@ export const dataSourcesInfo = {
             "name": "lookAheadTimeInMinutes",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -278,15 +275,13 @@ export const dataSourcesInfo = {
             "name": "incomingDays",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "pastDays",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -336,15 +331,13 @@ export const dataSourcesInfo = {
             "name": "incomingDays",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "pastDays",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -485,15 +478,13 @@ export const dataSourcesInfo = {
             "name": "top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "mailboxAddress",
@@ -537,15 +528,13 @@ export const dataSourcesInfo = {
             "name": "top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "mailboxAddress",
@@ -601,15 +590,13 @@ export const dataSourcesInfo = {
             "name": "top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -899,7 +886,7 @@ export const dataSourcesInfo = {
             "name": "messageIds",
             "in": "body",
             "required": true,
-            "type": "array"
+            "type": "object"
           },
           {
             "name": "categoryName",
@@ -949,29 +936,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -1025,8 +1008,7 @@ export const dataSourcesInfo = {
             "name": "top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -1270,29 +1252,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -1346,8 +1324,7 @@ export const dataSourcesInfo = {
             "name": "top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -1756,29 +1733,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -1855,29 +1828,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -1954,29 +1923,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -2053,29 +2018,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -2152,29 +2113,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -2245,29 +2202,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -2338,29 +2291,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -2437,29 +2386,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -2536,29 +2481,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -2635,29 +2576,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -3519,29 +3456,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -3609,29 +3542,25 @@ export const dataSourcesInfo = {
             "name": "to",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "cc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "toOrCc",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "from",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "email"
+            "type": "string"
           },
           {
             "name": "importance",
@@ -3739,15 +3668,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -3925,15 +3852,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -4009,15 +3934,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -4093,15 +4016,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -4189,15 +4110,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "search",
@@ -4259,15 +4178,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "search",
@@ -4495,15 +4412,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "x-ms-operation-context",
@@ -4553,15 +4468,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -4611,15 +4524,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -4669,15 +4580,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -4721,15 +4630,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "x-ms-operation-context",
@@ -4779,15 +4686,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "x-ms-operation-context",
@@ -4837,15 +4742,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -4889,15 +4792,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -4929,15 +4830,13 @@ export const dataSourcesInfo = {
             "name": "incomingDays",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "pastDays",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -4969,15 +4868,13 @@ export const dataSourcesInfo = {
             "name": "incomingDays",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "pastDays",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -5009,15 +4906,13 @@ export const dataSourcesInfo = {
             "name": "incomingDays",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "pastDays",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -5101,15 +4996,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -5975,15 +5868,13 @@ export const dataSourcesInfo = {
             "name": "skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "orderBy",
@@ -6167,15 +6058,13 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "$skip",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -6245,8 +6134,7 @@ export const dataSourcesInfo = {
             "name": "body",
             "in": "body",
             "required": true,
-            "type": "string",
-            "format": "binary"
+            "type": "object"
           },
           {
             "name": "Content-Type",
@@ -6290,8 +6178,7 @@ export const dataSourcesInfo = {
             "name": "Body",
             "in": "body",
             "required": false,
-            "type": "string",
-            "format": "binary"
+            "type": "object"
           },
           {
             "name": "ContentType",
@@ -6641,6 +6528,154 @@ export const dataSourcesInfo = {
       }
     }
   },
+  "documents": {
+    "tableId": "Documents",
+    "version": "",
+    "primaryKey": "ID",
+    "dataSourceType": "Connector",
+    "apis": {
+      "GetEditor": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/51b4f5a91e4946b788755865cde6fe59/entities/Editor",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      },
+      "GetAuthor": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/51b4f5a91e4946b788755865cde6fe59/entities/Author",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      },
+      "GetCheckoutUser": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/51b4f5a91e4946b788755865cde6fe59/entities/CheckoutUser",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      },
+      "Get4651e8f238c94ad08def41f743f76f30": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/51b4f5a91e4946b788755865cde6fe59/entities/4651e8f238c94ad08def41f743f76f30",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  },
   "flowerrorlogs": {
     "tableId": "Flow Error Logs",
     "version": "",
@@ -6719,6 +6754,267 @@ export const dataSourcesInfo = {
       },
       "Get4651e8f238c94ad08def41f743f76f30": {
         "path": "/{connectionId}/datasets/{dataset}/tables/b9964f5b1c2a4cb4a49f237e72719af2/entities/4651e8f238c94ad08def41f743f76f30",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  },
+  "loandocuments": {
+    "tableId": "LoanDocuments",
+    "version": "",
+    "primaryKey": "ID",
+    "dataSourceType": "Connector",
+    "apis": {
+      "GetEditor": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/9eef44b55a6d4a8f944ed3040bb8d895/entities/Editor",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      },
+      "GetAuthor": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/9eef44b55a6d4a8f944ed3040bb8d895/entities/Author",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      },
+      "GetCheckoutUser": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/9eef44b55a6d4a8f944ed3040bb8d895/entities/CheckoutUser",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      },
+      "Get4651e8f238c94ad08def41f743f76f30": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/9eef44b55a6d4a8f944ed3040bb8d895/entities/4651e8f238c94ad08def41f743f76f30",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  },
+  "loandocumenttracker": {
+    "tableId": "LoanDocumentTracker",
+    "version": "",
+    "primaryKey": "ID",
+    "dataSourceType": "Connector",
+    "apis": {
+      "GetAuthor": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/8d75630d218b49208a99a3705bc14b5e/entities/Author",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      },
+      "GetEditor": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/8d75630d218b49208a99a3705bc14b5e/entities/Editor",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      },
+      "Get4651e8f238c94ad08def41f743f76f30": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/8d75630d218b49208a99a3705bc14b5e/entities/4651e8f238c94ad08def41f743f76f30",
         "method": "GET",
         "parameters": [
           {
@@ -7422,8 +7718,7 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -7616,8 +7911,7 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -7655,8 +7949,7 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -8754,7 +9047,7 @@ export const dataSourcesInfo = {
             "name": "body",
             "in": "body",
             "required": true,
-            "type": "string"
+            "type": "object"
           }
         ],
         "responseInfo": {
@@ -8792,7 +9085,7 @@ export const dataSourcesInfo = {
             "name": "body",
             "in": "body",
             "required": true,
-            "type": "string"
+            "type": "object"
           }
         ],
         "responseInfo": {
@@ -8818,7 +9111,7 @@ export const dataSourcesInfo = {
             "name": "body",
             "in": "body",
             "required": true,
-            "type": "string"
+            "type": "object"
           }
         ],
         "responseInfo": {
@@ -8844,7 +9137,7 @@ export const dataSourcesInfo = {
             "name": "body",
             "in": "body",
             "required": true,
-            "type": "string"
+            "type": "object"
           }
         ],
         "responseInfo": {
@@ -8870,7 +9163,7 @@ export const dataSourcesInfo = {
             "name": "body",
             "in": "body",
             "required": true,
-            "type": "string"
+            "type": "object"
           }
         ],
         "responseInfo": {
@@ -8971,8 +9264,7 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -9001,22 +9293,19 @@ export const dataSourcesInfo = {
             "name": "startTime",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           },
           {
             "name": "endTime",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           },
           {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -9106,22 +9395,19 @@ export const dataSourcesInfo = {
             "name": "startTime",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           },
           {
             "name": "endTime",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           },
           {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -9275,8 +9561,7 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -9334,8 +9619,7 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "state",
@@ -9440,8 +9724,7 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "state",
@@ -9546,8 +9829,7 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "state",
@@ -9652,8 +9934,7 @@ export const dataSourcesInfo = {
             "name": "$top",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "state",
@@ -9781,15 +10062,13 @@ export const dataSourcesInfo = {
             "name": "taskModuleWidth",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "taskModuleHeight",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -9821,15 +10100,13 @@ export const dataSourcesInfo = {
             "name": "taskModuleWidth",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "taskModuleHeight",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -9861,15 +10138,13 @@ export const dataSourcesInfo = {
             "name": "taskModuleWidth",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "taskModuleHeight",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -9901,15 +10176,13 @@ export const dataSourcesInfo = {
             "name": "taskModuleWidth",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           {
             "name": "taskModuleHeight",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -10374,8 +10647,7 @@ export const dataSourcesInfo = {
             "name": "customizationModifiedTime",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -10419,8 +10691,7 @@ export const dataSourcesInfo = {
             "name": "customizationModifiedTime",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -10464,8 +10735,7 @@ export const dataSourcesInfo = {
             "name": "customizationModifiedTime",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -10509,8 +10779,7 @@ export const dataSourcesInfo = {
             "name": "customizationModifiedTime",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -10554,8 +10823,7 @@ export const dataSourcesInfo = {
             "name": "customizationModifiedTime",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -10599,8 +10867,7 @@ export const dataSourcesInfo = {
             "name": "customizationModifiedTime",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "integer"
           }
         ],
         "responseInfo": {
@@ -10858,8 +11125,7 @@ export const dataSourcesInfo = {
             "name": "Body",
             "in": "body",
             "required": false,
-            "type": "string",
-            "format": "binary"
+            "type": "object"
           },
           {
             "name": "ContentType",
@@ -11953,15 +12219,13 @@ export const dataSourcesInfo = {
             "name": "startDateTime",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           },
           {
             "name": "endDateTime",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           },
           {
             "name": "$top",
@@ -12005,15 +12269,13 @@ export const dataSourcesInfo = {
             "name": "startDateTime",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           },
           {
             "name": "endDateTime",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           },
           {
             "name": "$top",

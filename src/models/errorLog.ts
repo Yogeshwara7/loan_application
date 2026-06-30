@@ -33,9 +33,15 @@ export interface ErrorMetrics {
   latest?: string;
 }
 
-/** Best-available timestamp for an error (custom Timestamp column, else Created). */
+/**
+ * Best-available timestamp for an error. Prefers the SharePoint system `Created`
+ * field, which is always a full date+time. The custom `Timestamp` column is
+ * date-only in this list, so it would always render as midnight (e.g. 05:30 in
+ * UTC+5:30); `Created` is used for accuracy and we fall back to `Timestamp` only
+ * if `Created` is missing.
+ */
 export function logTimestamp(log: ErrorLog): string | undefined {
-  return log.Timestamp ?? log.Created ?? undefined;
+  return log.Created ?? log.Timestamp ?? undefined;
 }
 
 /** Stable row id for the grid. */

@@ -218,12 +218,12 @@ export function Dashboard() {
         </div>
       </div>
       <div className={styles.heroActions}>
-        <Button appearance="primary" icon={<AddRegular />} onClick={() => navigate('/new-application')}>
+        <Button appearance="primary" icon={<AddRegular />} onClick={() => navigate('/admin/new-application')}>
           New Application
         </Button>
         <Button
           icon={<ClipboardTaskListLtrRegular />}
-          onClick={() => navigate('/applications?status=review')}
+          onClick={() => navigate('/admin/applications?status=review')}
         >
           Review Pending
         </Button>
@@ -358,7 +358,7 @@ export function Dashboard() {
                   <div className={styles.recentList}>
                     {recent.map((r) => {
                       const id = r.cr174_loanapplicid ?? r.cr174_referencenumber ?? '';
-                      const open = () => navigate(`/applications/${encodeURIComponent(id)}`);
+                      const open = () => navigate(`/admin/applications/${encodeURIComponent(id)}`);
                       return (
                         <div
                           key={id}
@@ -394,7 +394,7 @@ export function Dashboard() {
                   <Button
                     className={styles.viewAll}
                     appearance="secondary"
-                    onClick={() => navigate('/applications')}
+                    onClick={() => navigate('/admin/applications')}
                   >
                     View All Applications
                   </Button>
@@ -404,7 +404,7 @@ export function Dashboard() {
                   title="No applications yet"
                   message="Create the first application to get started."
                   action={
-                    <Button appearance="primary" onClick={() => navigate('/new-application')}>
+                    <Button appearance="primary" onClick={() => navigate('/admin/new-application')}>
                       New Application
                     </Button>
                   }

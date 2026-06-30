@@ -260,7 +260,7 @@ export function MyProfile() {
             <div className={styles.approvalList}>
               {recentApprovals.map((r) => {
                 const id = r.cr174_loanapplicid ?? r.cr174_referencenumber ?? '';
-                const open = () => navigate(`/applications/${encodeURIComponent(id)}`);
+                const open = () => navigate(`/admin/applications/${encodeURIComponent(id)}`);
                 return (
                   <div
                     key={id}

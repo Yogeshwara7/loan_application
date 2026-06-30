@@ -492,6 +492,29 @@
           "x-ms-visibility": "advanced",
           "x-ms-permission": "read-write"
         },
+        "cr174_phonenumber": {
+          "x-ms-sort": "none",
+          "type": "string",
+          "maxLength": 100,
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "ne",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "contains",
+              "startswith",
+              "endswith",
+              "null"
+            ]
+          },
+          "description": "",
+          "title": "Phone Number",
+          "x-ms-visibility": "advanced",
+          "x-ms-permission": "read-write"
+        },
         "processid": {
           "x-ms-sort": "none",
           "type": "string",
@@ -726,6 +749,29 @@
           "description": "For internal use only.",
           "title": "Time Zone Rule Version Number",
           "format": "int32",
+          "x-ms-visibility": "advanced",
+          "x-ms-permission": "read-write"
+        },
+        "cr174_usernote": {
+          "x-ms-sort": "none",
+          "type": "string",
+          "maxLength": 2000,
+          "x-ms-capabilities": {
+            "filterFunctions": [
+              "eq",
+              "ne",
+              "gt",
+              "ge",
+              "lt",
+              "le",
+              "contains",
+              "startswith",
+              "endswith",
+              "null"
+            ]
+          },
+          "description": "",
+          "title": "UserNote",
           "x-ms-visibility": "advanced",
           "x-ms-permission": "read-write"
         },
@@ -1313,7 +1359,8 @@
             "Under Review",
             "Approved",
             "Rejected",
-            "Pending"
+            "Pending",
+            "ReSubmitted"
           ],
           "x-ms-crm-enumvalues": [
             null,
@@ -1321,7 +1368,8 @@
             470160001,
             470160002,
             470160003,
-            470160004
+            470160004,
+            470160005
           ]
         },
         "_statecode_label": {

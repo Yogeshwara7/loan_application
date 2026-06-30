@@ -23,6 +23,7 @@ const useStyles = makeStyles({
 export interface LoanSummaryCardProps {
   applicantName: string;
   applicantEmail: string;
+  phone?: string;
   collegeName: string;
   amount?: number | null;
   propertyValue?: number | null;
@@ -37,6 +38,7 @@ export interface LoanSummaryCardProps {
 export function LoanSummaryCard({
   applicantName,
   applicantEmail,
+  phone,
   collegeName,
   amount,
   propertyValue,
@@ -50,6 +52,7 @@ export function LoanSummaryCard({
   const applicantItems = [
     { label: 'Applicant Name', value: applicantName || '—' },
     { label: 'Applicant Email', value: applicantEmail || '—' },
+    ...(phone && phone.trim() ? [{ label: 'Phone Number', value: phone.trim() }] : []),
     ...(collegeName ? [{ label: 'College Name', value: collegeName }] : []),
   ];
 

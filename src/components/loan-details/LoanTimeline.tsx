@@ -158,9 +158,9 @@ export function LoanTimeline({ steps }: LoanTimelineProps) {
                   {state === 'completed' ? 'Completed' : 'Pending'}
                 </Caption1>
               )}
-              <Caption1 className={styles.timestamp}>
-                {step.timestamp ? formatRelative(step.timestamp) : 'Timestamp pending'}
-              </Caption1>
+              {step.timestamp && (
+                <Caption1 className={styles.timestamp}>{formatRelative(step.timestamp)}</Caption1>
+              )}
             </div>
           </div>
         );

@@ -1,32 +1,51 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Body1,
   Button,
   Caption1,
+  Dialog,
+  DialogActions,
+  DialogBody,
+  DialogContent,
+  DialogSurface,
+  DialogTitle,
+  Field,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
   MessageBar,
   MessageBarBody,
   Spinner,
   Subtitle2,
   Text,
+  Textarea,
   Title2,
   makeStyles,
-  mergeClasses,
   tokens,
 } from '@fluentui/react-components';
 import {
   ArrowLeftRegular,
   ArrowClockwiseRegular,
-  ArrowSyncRegular,
   CheckmarkCircleRegular,
+  DismissCircleRegular,
   CommentRegular,
-  HistoryRegular,
+  NoteRegular,
   StreamRegular,
+  TagRegular,
 } from '@fluentui/react-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Cr174_loanapplicsService } from '../generated';
 import { useLoanData } from '../context/LoanDataContext';
 import { useCurrentUser } from '../context/UserContext';
-import { classifyStatus, findApplication, formatCurrency, toErrorMessage } from '../models/loan';
+import {
+  STATUS_CHOICE_LABELS,
+  classifyStatus,
+  findApplication,
+  formatCurrency,
+  toErrorMessage,
+} from '../models/loan';
 import { formatDateTime } from '../models/errorLog';
 import {
   deriveTimelineFromRecord,
@@ -39,10 +58,10 @@ import {
   postLoanApprovedCard,
 } from '../services/TeamsNotificationService';
 import { Surface } from '../components/Surface';
-import { StatusBadge, DocumentsBadge } from '../components/StatusBadge';
+import { StatusBadge } from '../components/StatusBadge';
 import { ApplicationSummaryCards } from '../components/loan-details/ApplicationSummaryCards';
+import { ApplicationDocuments } from '../components/loan-details/ApplicationDocuments';
 import { LoanTimeline } from '../components/loan-details/LoanTimeline';
-import { LoanActivityFeed } from '../components/loan-details/LoanActivityFeed';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
 import { ErrorState } from '../components/ErrorState';
 import { EmptyState } from '../components/EmptyState';
@@ -94,17 +113,6 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorBrandBackground2,
     color: tokens.colorBrandForeground2,
   },
-  chipOrange: {
-    backgroundColor: tokens.colorPaletteDarkOrangeBackground2,
-    color: tokens.colorPaletteDarkOrangeForeground2,
-  },
-  docRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: tokens.spacingHorizontalM,
-    marginTop: tokens.spacingVerticalM,
-  },
   quote: {
     display: 'flex',
     gap: tokens.spacingHorizontalM,
@@ -116,6 +124,31 @@ const useStyles = makeStyles({
   quoteIcon: { color: tokens.colorBrandForeground1, fontSize: '20px', flexShrink: 0 },
   quoteText: { fontStyle: 'italic' },
 });
+
+// Dataverse status choice values for the two manager decisions.
+const STATUS_APPROVED = 470160002;
+const STATUS_REJECTED = 470160003;
+
+// All selectable statuses for the "Set status" menu (code → label), in choice order.
+// Changing status writes cr174_status, which is what server-side flows trigger on
+// (e.g. moving to Under Review).
+const STATUS_OPTIONS = Object.entries(STATUS_CHOICE_LABELS).map(([code, label]) => ({
+  code: Number(code),
+  label,
+}));
+
+/**
+ * Return a copy of the timeline data with the displayed status updated. Used for
+ * optimistic UI so the header badge, summary card, and current-status timeline
+ * step reflect the decision immediately.
+ */
+function withStatus(data: LoanTimelineResponse, status: string): LoanTimelineResponse {
+  return {
+    ...data,
+    status,
+    timeline: data.timeline.map((step) => (/current/i.test(step.step) ? { ...step, status } : step)),
+  };
+}
 
 export function ApplicationDetails() {
   const styles = useStyles();
@@ -131,15 +164,20 @@ export function ApplicationDetails() {
   const [pageStatus, setPageStatus] = useState<PageStatus>('loading');
   const [data, setData] = useState<LoanTimelineResponse | null>(null);
   const [error, setError] = useState<string>('');
-  const [approving, setApproving] = useState(false);
-  const [approveBanner, setApproveBanner] = useState<{
+  // The status code currently being written (for per-control spinners), or null.
+  const [pendingStatus, setPendingStatus] = useState<number | null>(null);
+  const [actionBanner, setActionBanner] = useState<{
     intent: 'success' | 'warning' | 'error';
     text: string;
   } | null>(null);
+  // Show the loading skeleton only on the first load; later refreshes (incl. the
+  // post-decision sync) keep the current content visible so an optimistic update
+  // is never replaced by a skeleton flash.
+  const hasLoadedRef = useRef(false);
 
   const load = useCallback(
     async (signal?: AbortSignal) => {
-      setPageStatus('loading');
+      if (!hasLoadedRef.current) setPageStatus('loading');
       setError('');
       try {
         let result: LoanTimelineResponse;
@@ -161,6 +199,7 @@ export function ApplicationDetails() {
 
         setData(result);
         setPageStatus('ready');
+        hasLoadedRef.current = true;
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return;
         setError(toErrorMessage(err, 'We could not load this application’s timeline.'));
@@ -178,76 +217,111 @@ export function ApplicationDetails() {
     return () => controller.abort();
   }, [dataStatus, load]);
 
-  // Day 16: approve the loan in Dataverse, then post an Adaptive Card to Teams.
-  const handleApprove = useCallback(async () => {
-    const recordId = record?.cr174_loanapplicid;
-    if (!recordId) {
-      setApproveBanner({
-        intent: 'error',
-        text: 'Cannot approve: the application record was not found in Dataverse.',
-      });
-      return;
-    }
-    setApproving(true);
-    setApproveBanner(null);
-    try {
-      // 1. Mark the application Approved (choice value 470160002) via the
-      //    existing generated Dataverse service.
-      const updateResult = await Cr174_loanapplicsService.update(recordId, {
-        cr174_status: 470160002,
-      });
-      if (!updateResult.success) {
-        throw updateResult.error ?? new Error('Failed to update the application status.');
+  // Optimistic status change. Updates the UI immediately, writes cr174_status to
+  // Dataverse (which is what server-side flows trigger on — e.g. Under Review),
+  // runs the Approve→Teams workflow when approving, and rolls back on failure.
+  const handleStatusUpdate = useCallback(
+    async (statusCode: number, statusLabel: string, officerComments?: string): Promise<boolean> => {
+      // Prevent duplicate submissions while a status change is already in flight.
+      if (pendingStatus !== null) return false;
+
+      const recordId = record?.cr174_loanapplicid;
+      if (!recordId || !data) {
+        setActionBanner({
+          intent: 'error',
+          text: 'Cannot update status: the application record was not found in Dataverse.',
+        });
+        return false;
       }
 
-      // 2. Post the approval Adaptive Card to Teams (best-effort — a Teams
-      //    failure must not undo the approval).
-      let teamsNote: string;
+      const previousData = data; // snapshot for rollback
+
+      setPendingStatus(statusCode);
+      setActionBanner(null);
+      // Optimistic update — reflect the new status (and any comment) immediately.
+      setData({
+        ...withStatus(data, statusLabel),
+        ...(officerComments !== undefined ? { officerComments } : {}),
+      });
+
       try {
-        await postLoanApprovedCard({
-          applicantName: record?.cr174_applicantname ?? '—',
-          referenceNumber: record?.cr174_referencenumber ?? referenceNumber,
-          loanType: record?._cr174_loantype_label ?? '—',
-          loanAmount: formatCurrency(record?.cr174_amount),
-          approvingOfficer: user.fullName || 'Unknown officer',
-          approvalTime: formatDateTime(new Date().toISOString()),
+        const updateResult = await Cr174_loanapplicsService.update(recordId, {
+          cr174_status: statusCode,
+          ...(officerComments !== undefined ? { cr174_officercomments: officerComments } : {}),
         });
-        teamsNote = ' An Adaptive Card was posted to the Approved Loans Teams channel.';
-      } catch (teamsErr) {
-        // Approval already succeeded — do NOT roll back. Log the Teams failure
-        // to the SharePoint Flow Error Logs list instead.
-        const teamsError = toErrorMessage(teamsErr, 'unknown error');
-        await logTeamsNotificationFailure({
-          applicantName: record?.cr174_applicantname ?? '—',
-          referenceNumber: record?.cr174_referencenumber ?? referenceNumber,
-          errorMessage: teamsError,
+        if (!updateResult.success) {
+          throw updateResult.error ?? new Error('Failed to update the application status.');
+        }
+
+        if (statusCode === STATUS_APPROVED) {
+          // Approve workflow, unchanged: post the Teams card (best-effort — a Teams
+          // failure does NOT roll back the approval) and log failures to SharePoint.
+          let teamsNote: string;
+          try {
+            await postLoanApprovedCard({
+              applicantName: record?.cr174_applicantname ?? '—',
+              referenceNumber: record?.cr174_referencenumber ?? referenceNumber,
+              loanType: record?._cr174_loantype_label ?? '—',
+              loanAmount: formatCurrency(record?.cr174_amount),
+              approvingOfficer: user.fullName || 'Unknown officer',
+              approvalTime: formatDateTime(new Date().toISOString()),
+            });
+            teamsNote = ' An Adaptive Card was posted to the Approved Loans Teams channel.';
+          } catch (teamsErr) {
+            const teamsError = toErrorMessage(teamsErr, 'unknown error');
+            await logTeamsNotificationFailure({
+              applicantName: record?.cr174_applicantname ?? '—',
+              referenceNumber: record?.cr174_referencenumber ?? referenceNumber,
+              errorMessage: teamsError,
+            });
+            teamsNote = ` The Teams notification failed and was logged to Flow Error Logs: ${teamsError}`;
+          }
+          setActionBanner({
+            intent: teamsNote.includes('failed') ? 'warning' : 'success',
+            text: `Application approved.${teamsNote}`,
+          });
+        } else {
+          setActionBanner({ intent: 'success', text: `Status updated to ${statusLabel}.` });
+        }
+
+        // Sync the shared Dataverse records; the load effect then silently
+        // refreshes this page's data (no skeleton) with the persisted status.
+        await reload();
+        return true;
+      } catch (err) {
+        // Dataverse update failed — restore the previous status and surface the error.
+        setData(previousData);
+        setActionBanner({
+          intent: 'error',
+          text: toErrorMessage(err, `The status could not be updated to ${statusLabel}.`),
         });
-        teamsNote = ` The Teams notification failed and was logged to Flow Error Logs: ${teamsError}`;
+        return false;
+      } finally {
+        setPendingStatus(null);
       }
+    },
+    [pendingStatus, data, record, referenceNumber, user.fullName, reload],
+  );
 
-      setApproveBanner({
-        intent: teamsNote.includes('failed') ? 'warning' : 'success',
-        text: `Application approved.${teamsNote}`,
-      });
+  // Rejecting opens a dialog to capture the officer's reason, which is saved to
+  // cr174_officercomments alongside the status change.
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectComment, setRejectComment] = useState('');
 
-      await reload();
-      void load();
-    } catch (err) {
-      setApproveBanner({
-        intent: 'error',
-        text: toErrorMessage(err, 'The application could not be approved.'),
-      });
-    } finally {
-      setApproving(false);
+  const confirmReject = useCallback(async () => {
+    const ok = await handleStatusUpdate(STATUS_REJECTED, 'Rejected', rejectComment.trim());
+    if (ok) {
+      setRejectOpen(false);
+      setRejectComment('');
     }
-  }, [record, referenceNumber, user.fullName, reload, load]);
+  }, [handleStatusUpdate, rejectComment]);
 
   const backButton = (
     <Button
       className={styles.back}
       appearance="subtle"
       icon={<ArrowLeftRegular />}
-      onClick={() => navigate('/applications')}
+      onClick={() => navigate('/admin/applications')}
     >
       Back to Applications
     </Button>
@@ -293,7 +367,7 @@ export function ApplicationDetails() {
             title="No application details found"
             message="We couldn't find timeline details for this application."
             action={
-              <Button appearance="primary" onClick={() => navigate('/applications')}>
+              <Button appearance="primary" onClick={() => navigate('/admin/applications')}>
                 View all applications
               </Button>
             }
@@ -321,27 +395,76 @@ export function ApplicationDetails() {
           {classifyStatus(data.status) !== 'approved' && record && (
             <Button
               appearance="primary"
-              icon={approving ? <Spinner size="tiny" /> : <CheckmarkCircleRegular />}
-              onClick={() => void handleApprove()}
-              disabled={approving}
+              icon={
+                pendingStatus === STATUS_APPROVED ? <Spinner size="tiny" /> : <CheckmarkCircleRegular />
+              }
+              onClick={() => void handleStatusUpdate(STATUS_APPROVED, 'Approved')}
+              disabled={pendingStatus !== null}
             >
-              {approving ? 'Approving…' : 'Approve & Notify'}
+              {pendingStatus === STATUS_APPROVED ? 'Approving…' : 'Approve & Notify'}
             </Button>
+          )}
+          {classifyStatus(data.status) !== 'rejected' && record && (
+            <Button
+              appearance="secondary"
+              icon={
+                pendingStatus === STATUS_REJECTED ? <Spinner size="tiny" /> : <DismissCircleRegular />
+              }
+              onClick={() => setRejectOpen(true)}
+              disabled={pendingStatus !== null}
+            >
+              {pendingStatus === STATUS_REJECTED ? 'Rejecting…' : 'Reject'}
+            </Button>
+          )}
+          {record && (
+            <Menu>
+              <MenuTrigger disableButtonEnhancement>
+                <MenuButton
+                  appearance="secondary"
+                  icon={<TagRegular />}
+                  disabled={pendingStatus !== null}
+                >
+                  Set status
+                </MenuButton>
+              </MenuTrigger>
+              <MenuPopover>
+                <MenuList>
+                  {STATUS_OPTIONS.map((option) => {
+                    const isCurrent =
+                      (data.status ?? '').trim().toLowerCase() === option.label.toLowerCase();
+                    return (
+                      <MenuItem
+                        key={option.code}
+                        disabled={isCurrent}
+                        onClick={() =>
+                          option.code === STATUS_REJECTED
+                            ? setRejectOpen(true)
+                            : void handleStatusUpdate(option.code, option.label)
+                        }
+                      >
+                        {option.label}
+                        {isCurrent ? ' (current)' : ''}
+                      </MenuItem>
+                    );
+                  })}
+                </MenuList>
+              </MenuPopover>
+            </Menu>
           )}
           <Button
             appearance="secondary"
             icon={<ArrowClockwiseRegular />}
             onClick={() => void load()}
-            disabled={approving}
+            disabled={pendingStatus !== null}
           >
             Refresh
           </Button>
         </div>
       </Surface>
 
-      {approveBanner && (
-        <MessageBar intent={approveBanner.intent}>
-          <MessageBarBody>{approveBanner.text}</MessageBarBody>
+      {actionBanner && (
+        <MessageBar intent={actionBanner.intent}>
+          <MessageBarBody>{actionBanner.text}</MessageBarBody>
         </MessageBar>
       )}
 
@@ -365,62 +488,29 @@ export function ApplicationDetails() {
         <Surface>
           <Subtitle2 className={styles.sectionTitle}>
             <span className={styles.chip} aria-hidden>
-              <HistoryRegular />
+              <StreamRegular />
             </span>
-            Loan Timeline
+            Activity Feed
           </Subtitle2>
           {data.timeline.length > 0 ? (
             <LoanTimeline steps={data.timeline} />
           ) : (
-            <EmptyState title="No timeline yet" message="Lifecycle steps will appear here." />
+            <EmptyState title="No activity yet" message="Activity will appear here." />
           )}
         </Surface>
 
         <div className={styles.col}>
-          <Surface>
-            <Subtitle2 className={styles.sectionTitle}>
-              <span className={styles.chip} aria-hidden>
-                <CommentRegular />
-              </span>
-              Officer Review
-            </Subtitle2>
-            {data.officerComments ? (
+          {data.officerComments.trim() && (
+            <Surface>
+              <Subtitle2 className={styles.sectionTitle}>
+                <span className={styles.chip} aria-hidden>
+                  <CommentRegular />
+                </span>
+                Officer Review
+              </Subtitle2>
               <div className={styles.quote}>
                 <CommentRegular className={styles.quoteIcon} aria-hidden />
                 <Text className={styles.quoteText}>{data.officerComments}</Text>
-              </div>
-            ) : (
-              <EmptyState
-                icon={<CommentRegular />}
-                title="No officer comments"
-                message="No reviewer comments have been added for this application yet."
-              />
-            )}
-          </Surface>
-
-          {classifyStatus(data.status) === 'resubmitted' && (
-            <Surface>
-              <Subtitle2 className={styles.sectionTitle}>
-                <span className={mergeClasses(styles.chip, styles.chipOrange)} aria-hidden>
-                  <ArrowSyncRegular />
-                </span>
-                Resubmission
-              </Subtitle2>
-              {data.resubmissionNotes ? (
-                <div className={styles.quote}>
-                  <ArrowSyncRegular className={styles.quoteIcon} aria-hidden />
-                  <Text className={styles.quoteText}>{data.resubmissionNotes}</Text>
-                </div>
-              ) : (
-                <EmptyState
-                  icon={<ArrowSyncRegular />}
-                  title="No resubmission notes"
-                  message="The applicant didn't include notes with this resubmission."
-                />
-              )}
-              <div className={styles.docRow}>
-                <Body1>Newly uploaded documents</Body1>
-                <DocumentsBadge uploaded={record?.cr174_documentsuploaded} />
               </div>
             </Surface>
           )}
@@ -428,18 +518,77 @@ export function ApplicationDetails() {
           <Surface>
             <Subtitle2 className={styles.sectionTitle}>
               <span className={styles.chip} aria-hidden>
-                <StreamRegular />
+                <NoteRegular />
               </span>
-              Activity Feed
+              User Note
             </Subtitle2>
-            {data.timeline.length > 0 ? (
-              <LoanActivityFeed steps={data.timeline} />
+            {record?.cr174_usernote?.trim() ? (
+              <div className={styles.quote}>
+                <NoteRegular className={styles.quoteIcon} aria-hidden />
+                <Text className={styles.quoteText}>{record.cr174_usernote}</Text>
+              </div>
             ) : (
-              <EmptyState title="No activity yet" message="Activity will appear here." />
+              <EmptyState
+                icon={<NoteRegular />}
+                title="No user note"
+                message="The applicant didn't add a note to this application."
+              />
             )}
           </Surface>
+
+          <ApplicationDocuments
+            referenceNumber={data.referenceNumber || referenceNumber}
+            flagged={record?.cr174_documentsuploaded}
+          />
         </div>
       </div>
+
+      <Dialog
+        open={rejectOpen}
+        onOpenChange={(_e, dialogData) => {
+          if (pendingStatus === null) setRejectOpen(dialogData.open);
+        }}
+      >
+        <DialogSurface>
+          <DialogBody>
+            <DialogTitle>Reject application</DialogTitle>
+            <DialogContent>
+              <Field
+                label="Reason for rejection"
+                required
+                hint="Saved to the officer comments and shown to the applicant when they reapply."
+              >
+                <Textarea
+                  value={rejectComment}
+                  onChange={(_e, d) => setRejectComment(d.value)}
+                  placeholder="Explain why this application is being rejected…"
+                  rows={4}
+                  resize="vertical"
+                />
+              </Field>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                appearance="secondary"
+                onClick={() => setRejectOpen(false)}
+                disabled={pendingStatus !== null}
+              >
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                icon={
+                  pendingStatus === STATUS_REJECTED ? <Spinner size="tiny" /> : <DismissCircleRegular />
+                }
+                onClick={() => void confirmReject()}
+                disabled={!rejectComment.trim() || pendingStatus !== null}
+              >
+                {pendingStatus === STATUS_REJECTED ? 'Rejecting…' : 'Reject application'}
+              </Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
     </div>
   );
 }

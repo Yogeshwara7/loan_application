@@ -22,6 +22,7 @@ export interface Cr174_loanapplicsBase {
   modifiedon?: string;
   cr174_newcolumn?: string;
   cr174_officercomments?: string;
+  cr174_phonenumber?: string;
   processid?: string;
   cr174_propertyvalue?: number;
   cr174_propertyvalue_base?: number;
@@ -31,6 +32,7 @@ export interface Cr174_loanapplicsBase {
   cr174_status?: number;
   statecode?: number;
   timezoneruleversionnumber?: number;
+  cr174_usernote?: string;
   utcconversiontimezonecode?: number;
   versionnumber?: number;
   _cr174_displayname_value?: string;

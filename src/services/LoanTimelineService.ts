@@ -147,7 +147,7 @@ export function deriveTimelineFromRecord(record: LoanApplication): LoanTimelineR
     referenceNumber: record.cr174_referencenumber ?? '',
     applicantName: record.cr174_applicantname ?? '',
     status,
-    officerComments: '',
+    officerComments: record.cr174_officercomments ?? '',
     resubmissionNotes: '',
     timeline: [
       { step: 'Application Submitted', status: 'Completed' },

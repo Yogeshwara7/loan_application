@@ -32,6 +32,16 @@ export const STATUS_CHOICE_LABELS: Record<string, string> = {
   '470160005': 'ReSubmitted',
 };
 
+/** Dataverse status choice codes keyed by name (the inverse of STATUS_CHOICE_LABELS). */
+export const STATUS_CODE = {
+  Received: 470160000,
+  UnderReview: 470160001,
+  Approved: 470160002,
+  Rejected: 470160003,
+  Pending: 470160004,
+  ReSubmitted: 470160005,
+} as const;
+
 /**
  * Classify a status into a known bucket using the human-readable status label.
  * Option-set numeric values are environment specific (resolved via dynamic

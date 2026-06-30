@@ -6,12 +6,18 @@
 // Models
 export * as CommonModels from './models/CommonModels';
 export * as Cr174_loanapplicsModel from './models/Cr174_loanapplicsModel';
+export * as DocumentsModel from './models/DocumentsModel';
 export * as FlowErrorLogsModel from './models/FlowErrorLogsModel';
+export * as LoanDocumentTrackerModel from './models/LoanDocumentTrackerModel';
+export * as LoanDocumentsModel from './models/LoanDocumentsModel';
 export * as MicrosoftTeamsModel from './models/MicrosoftTeamsModel';
 export * as Office365OutlookModel from './models/Office365OutlookModel';
 
 // Services
 export * from './services/Cr174_loanapplicsService';
+export * from './services/DocumentsService';
 export * from './services/FlowErrorLogsService';
+export * from './services/LoanDocumentTrackerService';
+export * from './services/LoanDocumentsService';
 export * from './services/MicrosoftTeamsService';
 export * from './services/Office365OutlookService';

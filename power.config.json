@@ -38,13 +38,29 @@
       "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
       "displayName": "SharePoint",
       "dataSources": [
-        "flowerrorlogs"
+        "flowerrorlogs",
+        "loandocuments",
+        "loandocumenttracker",
+        "documents"
       ],
       "dataSets": {
         "https://innorvellc-my.sharepoint.com/personal/yogeshwara_b_innorve_com": {
           "dataSources": {
             "flowerrorlogs": {
               "tableName": "Flow Error Logs"
+            }
+          }
+        },
+        "https://innorvellc.sharepoint.com/sites/LoanManagement": {
+          "dataSources": {
+            "loandocuments": {
+              "tableName": "LoanDocuments"
+            },
+            "loandocumenttracker": {
+              "tableName": "LoanDocumentTracker"
+            },
+            "documents": {
+              "tableName": "Documents"
             }
           }
         }

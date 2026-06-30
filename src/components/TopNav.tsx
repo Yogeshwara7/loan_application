@@ -59,11 +59,11 @@ interface NavItem {
 }
 
 const NAV_ITEMS: readonly NavItem[] = [
-  { path: '/dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
-  { path: '/applications', label: 'Applications', icon: <ApplicationsIcon /> },
-  { path: '/new-application', label: 'New Application', icon: <NewAppIcon /> },
-  { path: '/analytics', label: 'Analytics', icon: <AnalyticsIcon /> },
-  { path: '/admin', label: 'Admin', icon: <AdminIcon /> },
+  { path: '/admin/dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
+  { path: '/admin/applications', label: 'Applications', icon: <ApplicationsIcon /> },
+  { path: '/admin/new-application', label: 'New Application', icon: <NewAppIcon /> },
+  { path: '/admin/analytics', label: 'Analytics', icon: <AnalyticsIcon /> },
+  { path: '/admin/error-logs', label: 'Admin', icon: <AdminIcon /> },
 ];
 
 const useStyles = makeStyles({
@@ -144,6 +144,11 @@ const useStyles = makeStyles({
     paddingInline: tokens.spacingHorizontalM,
     paddingBlock: tokens.spacingVerticalS,
   },
+  menuHead: {
+    paddingInline: tokens.spacingHorizontalM,
+    paddingBlock: tokens.spacingVerticalXS,
+    color: tokens.colorNeutralForeground3,
+  },
   avatarButton: {
     border: 'none',
     background: 'none',
@@ -178,8 +183,8 @@ export function TopNav() {
     NAV_ITEMS.find(
       (item) =>
         location.pathname === item.path ||
-        (item.path !== '/dashboard' && location.pathname.startsWith(item.path)),
-    )?.path ?? '/dashboard';
+        (item.path !== '/admin/dashboard' && location.pathname.startsWith(item.path)),
+    )?.path ?? '/admin/dashboard';
 
   const metrics = useMemo(() => computeDashboardMetrics(records), [records]);
 
@@ -189,7 +194,7 @@ export function TopNav() {
 
   const runSearch = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      navigate(`/applications${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ''}`);
+      navigate(`/admin/applications${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ''}`);
     }
   };
 
@@ -198,7 +203,7 @@ export function TopNav() {
 
   return (
     <header className={styles.root}>
-      <button className={styles.brand} onClick={() => navigate('/dashboard')} aria-label="Innorve Loan Manager home">
+      <button className={styles.brand} onClick={() => navigate('/admin/dashboard')} aria-label="Innorve Loan Manager home">
         <span className={styles.logoTile} aria-hidden>
           IL
         </span>
@@ -251,16 +256,16 @@ export function TopNav() {
               {status === 'ready' ? (
                 <>
                   {metrics.review > 0 && (
-                    <MenuItem onClick={() => navigate('/applications?status=review')}>
+                    <MenuItem onClick={() => navigate('/admin/applications?status=review')}>
                       {metrics.review} application{metrics.review === 1 ? '' : 's'} need review
                     </MenuItem>
                   )}
                   {metrics.received > 0 && (
-                    <MenuItem onClick={() => navigate('/applications?status=received')}>
+                    <MenuItem onClick={() => navigate('/admin/applications?status=received')}>
                       {metrics.received} newly received
                     </MenuItem>
                   )}
-                  <MenuItem onClick={() => navigate('/applications')}>
+                  <MenuItem onClick={() => navigate('/admin/applications')}>
                     {metrics.total} total applications
                   </MenuItem>
                 </>
@@ -304,17 +309,24 @@ export function TopNav() {
             </div>
             <MenuDivider />
             <MenuList>
-              <MenuItem icon={<PersonRegular />} onClick={() => navigate('/my-profile')}>
+              <MenuItem icon={<PersonRegular />} onClick={() => navigate('/admin/my-profile')}>
                 Profile
               </MenuItem>
-              <MenuItem icon={<SettingsRegular />} onClick={() => navigate('/my-profile')}>
+              <MenuItem icon={<SettingsRegular />} onClick={() => navigate('/admin/my-profile')}>
                 Settings
               </MenuItem>
+            </MenuList>
+            <MenuDivider />
+            <Caption1 className={styles.menuHead}>Switch portal</Caption1>
+            <MenuList>
+              <MenuItem icon={<WrenchRegular />} onClick={() => navigate('/admin/dashboard')}>
+                Admin Portal
+              </MenuItem>
+              <MenuItem icon={<PersonRegular />} onClick={() => navigate('/user/home')}>
+                Applicant Portal
+              </MenuItem>
               <MenuDivider />
-              <Tooltip
-                content="Sign out is managed by the Power Apps host"
-                relationship="label"
-              >
+              <Tooltip content="Sign out is managed by the Power Apps host" relationship="label">
                 <MenuItem icon={<SignOutRegular />} disabled>
                   Sign out
                 </MenuItem>
